@@ -1,16 +1,7 @@
-<<<<<<< HEAD
-class SignupSheet
-
-
-
-end
-
-||||||| merged common ancestors
-=======
 class SignupSheet < ActiveRecord::Base
 
 
-  def signup_team ( assignment_id, user_id, topic_id )
+  def self.signup_team ( assignment_id, user_id, topic_id )
     users_team = SignedUpUser.find_team_users(assignment_id, user_id)
     if users_team.size == 0
       #if team is not yet created, create new team.
@@ -47,5 +38,3 @@ class SignupSheet < ActiveRecord::Base
     dg
   end
 end
-
->>>>>>> 5513cf844441d96fcb3a73965c3fe9a8b8b85ac3

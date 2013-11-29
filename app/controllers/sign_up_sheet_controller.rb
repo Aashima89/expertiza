@@ -13,6 +13,7 @@ class SignUpSheetController < ApplicationController
   require 'rgl/dot'
   require 'graph/graphviz_dot'
   require 'rgl/topsort'
+  require 'SignupSheet'
 
   #Includes functions for team management. Refer /app/helpers/ManageTeamHelper
   include ManageTeamHelper
@@ -281,7 +282,8 @@ class SignUpSheetController < ApplicationController
     #Always use team_id ACS
 
     #check whether the user already has a team for this assignment
-    SignupSheet.signup_team(@assignment, @user_id, params[:id])
+   # SignupSheet.signup_team(@assignment, @user_id, params[:id])
+    SignupSheet.signup_team(@assignment,@user_id,params[:id])
     redirect_to :action => 'list', :id => params[:assignment_id]
   end
 

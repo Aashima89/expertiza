@@ -11,6 +11,7 @@ module ManageTeamHelper
       flash[:error] = "\"#{params[:user][:name].strip}\" is not defined. Please <a href=\"#{urlCreate}\">create</a> this user before continuing."
     end
 #find the team with 'team_id' form database and add new user to team
+  else
     team = Team.find(team_id)
     team.add_member(user, team.parent_id)
   end

@@ -292,8 +292,11 @@ Expertiza::Application.routes.draw do |map|
       get :signup
       get :delete_signup
       get :team_details
+      get :sign_up
     end
   end
+
+
 
   resources :site_controllers do
     collection do
