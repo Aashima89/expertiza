@@ -191,7 +191,7 @@ class Assignment < ActiveRecord::Base
     response_map_set.first
   end
 
-  def dynamic_reviewer_assignment?
+  def is_using_dynamic_reviewer_assignment?
     (self.review_assignment_strategy == RS_AUTO_SELECTED || self.review_assignment_strategy == RS_STUDENT_SELECTED) ? true : false
   end
 

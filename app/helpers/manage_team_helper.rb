@@ -4,7 +4,7 @@
 module ManageTeamHelper
 
 # Adds a user specified bu 'user' object to a team specified by 'team_id'
-  def create_team_users(user, team_id)
+  def self.create_team_users(user, team_id)
 #if user does not exist flash message
     if !user
       urlCreate = url_for :controller => 'users', :action => 'new'
