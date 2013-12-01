@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 class Assignment < ActiveRecord::Base
   require 'analytic/assignment_analytic'
   include AssignmentAnalytic
@@ -774,7 +773,7 @@ class Assignment < ActiveRecord::Base
     Team.find_by_sql("select * from teams where parent_id = "+id+" AND advertise_for_partner='1'").size > 0
   end
 end
-=======
+
 class Assignment < ActiveRecord::Base
   require 'analytic/assignment_analytic'
   include AssignmentAnalytic
@@ -1550,4 +1549,4 @@ class Assignment < ActiveRecord::Base
     Team.find_by_sql("select * from teams where parent_id = "+id+" AND advertise_for_partner='1'").size > 0
   end
 end
->>>>>>> 97d1a10c9d203a40da1fcafa8f9c73b86bc8362a
+

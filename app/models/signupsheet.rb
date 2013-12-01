@@ -7,11 +7,11 @@ class Signupsheet < ActiveRecord::Base
 
   def self.signup_team ( assignment_id, user_id, topic_id )
     users_team = SignedUpUser.find_team_users(assignment_id.id, user_id)
+    puts ("Assignment is " + assignment_id.id.to_s + " team is " + users_team.to_s + " user is " + user_id.to_s + " topic is " + topic_id.to_s)
     if users_team.size == 0
       #if team is not yet created, create new team.
-
       team = AssignmentTeam.create_team_and_node(assignment_id)
-      puts (team.id.to_s + "is team id " + team.parent_id.to_s + "is parent id")
+      #puts (team.id.to_s + "is team id " + team.parent_id.to_s + "is parent id")
       user = User.find(user_id)
       teamuser = ManageTeamHelper.create_team_users(user, team.id)
      confirmationStatus = self.confirmtopic(team.id, topic_id, assignment_id, user_id)
