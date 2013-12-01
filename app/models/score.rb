@@ -118,7 +118,6 @@ class Score < ActiveRecord::Base
       flag = 0
       latest_review_phase_start_time = nil
       current_time = Time.new
-      #score.rb
       for deadline in @sorted_deadlines
         # if flag is set then we saw a review deadline in the
         # previous iteration - check if this deadline is a past
