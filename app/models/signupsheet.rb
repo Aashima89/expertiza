@@ -8,6 +8,7 @@ class SignupSheet < ActiveRecord::Base
       team = AssignmentTeam.create_team_and_node(assignment_id)
       user = User.find(user_id)
       teamuser = create_team_users(user, team.id)
+      #confirm final topics
       confirmationStatus = confirmTopic(team.id, topic_id, assignment_id)
     else
       confirmationStatus = confirmTopic(users_team[0].t_id, topic_id, assignment_id)
