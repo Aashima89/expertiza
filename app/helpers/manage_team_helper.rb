@@ -4,13 +4,14 @@
 module ManageTeamHelper
 
 # Adds a user specified bu 'user' object to a team specified by 'team_id'
-  def self.create_team_users(user, team_id)
+  def create_team_users(user, team_id)
 #if user does not exist flash message
     if !user
       urlCreate = url_for :controller => 'users', :action => 'new'
       flash[:error] = "\"#{params[:user][:name].strip}\" is not defined. Please <a href=\"#{urlCreate}\">create</a> this user before continuing."
     end
 #find the team with 'team_id' form database and add new user to team
+  else
     team = Team.find(team_id)
     team.add_member(user, team.parent_id)
   end

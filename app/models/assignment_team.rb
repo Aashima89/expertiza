@@ -215,10 +215,10 @@ class AssignmentTeam < Team
   end
 
   def self.create_team_and_node(assignment_id)
-    assignment = Assignment.find(assignment_id.id)
+    assignment = Assignment.find(assignment_id)
     team_name = Team.generate_team_name(assignment.name)
-    team = AssignmentTeam.create(name: team_name, parent_id: assignment_id.id)
-    TeamNode.create(parent_id: assignment_id.id, node_object_id: team.id)
+    team = AssignmentTeam.create(name: team_name, parent_id: assignment_id)
+    TeamNode.create(parent_id: assignment_id, node_object_id: team.id)
     team
   end
 

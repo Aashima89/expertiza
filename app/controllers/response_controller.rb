@@ -300,7 +300,7 @@ class ResponseController < ApplicationController
     end
 
     redirect_to :controller => 'response', :action => 'saving', :id => @map.map_id, :return => params[:return], :msg => msg, :error_msg => error_msg, :save_options => params[:save_options]
-
+  end
 
   def custom_create ###-### Is this used?  It is not present in the master branch.
     @map = ResponseMap.find(params[:id])
@@ -395,3 +395,5 @@ class ResponseController < ApplicationController
       end
       !current_user_id?(response.map.reviewer.user_id)
     end
+  end
+end

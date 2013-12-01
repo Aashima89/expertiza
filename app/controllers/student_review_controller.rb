@@ -1,5 +1,9 @@
 class StudentReviewController < ApplicationController
-  
+
+  helper_method :is_using_dynamic_reviewer_assignment?
+
+
+
   def list 
     @participant = AssignmentParticipant.find(params[:id])
     return unless current_user_id?(@participant.user_id)
@@ -57,6 +61,8 @@ class StudentReviewController < ApplicationController
         end
       end
     end
-  end  
-  
+  end
+
+
+
 end
