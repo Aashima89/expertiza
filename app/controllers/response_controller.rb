@@ -3,11 +3,13 @@ class ResponseController < ApplicationController
   helper :submitted_content
   helper :file
 
-  def latestResponseVersion
+  def latestResponseVersion(map_id)
     #get all previous versions of responses for the response map.
-    array_not_empty=0
+    puts " In latestResponseVersion" +map_id.to_s
+    array_not_empty = 0
     @review_scores=Array.new
-    @prev=Response.find_by_map_id(@map.id)
+    #puts "Maps_id"+ @map.id
+    @prev=Response.find_by_map_id(map_id)
     for element in @prev
       array_not_empty=1
       @review_scores << element
@@ -168,6 +170,7 @@ class ResponseController < ApplicationController
     end
   end
 
+
   def update  ###-### Seems like this method may no longer be used -- not in E806 version of the file
     @response = Response.find(params[:id])
     return if redirect_when_disallowed(@response)
@@ -233,7 +236,7 @@ class ResponseController < ApplicationController
     @header = "New"
     @next_action = "create"
     @feedback = params[:feedback]
-    @map = Response.find(params[:id])
+    @map = ResponseMap.find(params[:id])
     @return = params[:return]
     @modified_object = @map.id
     get_content
@@ -252,12 +255,13 @@ class ResponseController < ApplicationController
   end
 
   def create
-    @map = ResponseMap.find(params[:id])                 #assignment/review/metareview id is in params id
+    @map = ResponseMap.find(params[:id])     #assignment/review/metareview id is in params id
+    puts "Values in map"+ @map.id.to_s
     @res = 0
     msg = ""
     error_msg = ""
-    latestResponseVersion
-                                                         #if previous responses exist increment the version number.
+    latestResponseVersion(@map.id)
+                                             #if previous responses exist increment the version number.
     if array_not_empty==1
       @sorted=@review_scores.sort { |m1, m2| (m1.version_num and m2.version_num) ? m2.version_num <=> m1.version_num : (m1.version_num ? -1 : 1) }
       @largest_version_num=@sorted[0]
@@ -285,21 +289,22 @@ class ResponseController < ApplicationController
       score = Score.create(:response_id => @response.response_id, :question_id => questions[k.to_i].id, :score => v[:score], :comments => v[:comment])
     end
   rescue
-    error_msg = "Your response was not saved. Cause: " + $!
+    error_msg = "Your response was not saved. Cause: "
+
+
+    begin
+      ResponseHelper.compare_scores(@response, @questionnaire)
+      ScoreCache.update_cache(@res)
+      #@map.save
+      msg = "Your response was successfully saved."
+    rescue
+
+      @response.delete
+      error_msg = "Your response was not saved. Cause: " + $!
+    end
+
+    redirect_to :controller => 'response', :action => 'saving', :id => @map.map_id, :return => params[:return], :msg => msg, :error_msg => error_msg, :save_options => params[:save_options]
   end
-
-  #begin
-  #  ResponseHelper.compare_scores(@response, @questionnaire)
-  #  ScoreCache.update_cache(@res)
-  #  #@map.save
-  #  msg = "Your response was successfully saved."
-  #rescue
-  #  @response.delete
-  #  error_msg = "Your response was not saved. Cause: " + $!
-  #end
-  #
-  #redirect_to :controller => 'response', :action => 'saving', :id => @map.map_id, :return => params[:return], :msg => msg, :error_msg => error_msg, :save_options => params[:save_options]
-
 
   def custom_create ###-### Is this used?  It is not present in the master branch.
     @map = ResponseMap.find(params[:id])
@@ -394,5 +399,5 @@ class ResponseController < ApplicationController
     end
     !current_user_id?(response.map.reviewer.user_id)
   end
-end
 
+end
