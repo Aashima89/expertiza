@@ -13,7 +13,6 @@ class SignUpSheetController < ApplicationController
   require 'rgl/dot'
   require 'graph/graphviz_dot'
   require 'rgl/topsort'
-  require 'SignupSheet'
 
   #Includes functions for team management. Refer /app/helpers/ManageTeamHelper
   include ManageTeamHelper
@@ -278,12 +277,12 @@ class SignUpSheetController < ApplicationController
     #find the assignment to which user is signing up
     @assignment = Assignment.find(params[:assignment_id])
     @user_id = session[:user].id
+
     #check whether team assignment. This is to decide whether a team_id or user_id should be the creator_id
     #Always use team_id ACS
 
     #check whether the user already has a team for this assignment
-   # SignupSheet.signup_team(@assignment, @user_id, params[:id])
-    SignupSheet.signup_team(@assignment,@user_id,params[:id])
+    Signupsheet.signup_team(@assignment, @user_id, params[:id])
     redirect_to :action => 'list', :id => params[:assignment_id]
   end
 
@@ -298,11 +297,13 @@ class SignUpSheetController < ApplicationController
     user_signup
   end
 
-  def confirm_topic(creator_id, topic_id, assignment_id)
+
+  def confirmtopic(creator_id, topic_id, assignment_id)
     @param_id = params[:id]
     @user_id = session[:user].id
     Waitlist.waitlist_teams(@param_id, @user_id, creator_id, topic_id, assignment_id)
   end
+
 
   #this function is used to prevent injection attacks.  A topic *dependent* on another topic cannot be
   # attempted until the other topic has been completed..
