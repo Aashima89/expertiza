@@ -14,7 +14,8 @@ class ResponseController < ApplicationController
       array_not_empty=1
       @review_scores << element
     end
-    def get_scores
+    end
+  def get_scores
       @review_scores = Array.new
       @question_type = Array.new
       @questions.each{
@@ -23,7 +24,7 @@ class ResponseController < ApplicationController
         @question_type << QuestionType.find_by_question_id(question.id)
       }
     end
-    def delete
+   def delete
       @response = Response.find(params[:id])
       return if redirect_when_disallowed(@response)             #user cannot delete other people's responses. Needs to be authenticated.
       map_id = @response.map.id
@@ -32,7 +33,7 @@ class ResponseController < ApplicationController
     end
     #Determining the current phase and check if a review is already existing for this stage.
     #If so, edit that version otherwise create a new version.
-    def rereview
+  def rereview
       @map=ResponseMap.find(params[:id])
       get_content
       latestResponseVersion
@@ -119,7 +120,7 @@ class ResponseController < ApplicationController
           render :action => 'response'
         end
       end
-    end
+
     if array_not_empty==1
       @sorted=@review_scores.sort { |m1, m2| (m1.version_num and m2.version_num) ? m2.version_num <=> m1.version_num : (m1.version_num ? -1 : 1) }
       @largest_version_num=@sorted[0]
@@ -143,7 +144,7 @@ class ResponseController < ApplicationController
       #**********************
       render :action => 'response'
     end
-  end
+    end
 
   def edit
     @header = "Edit"
@@ -256,7 +257,7 @@ class ResponseController < ApplicationController
 
   def create
     @map = ResponseMap.find(params[:id])     #assignment/review/metareview id is in params id
-    puts "Values in map"+ @map.id.to_s
+    #puts "Values in map"+ @map.id.to_s
     @res = 0
     msg = ""
     error_msg = ""
