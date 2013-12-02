@@ -1125,7 +1125,7 @@ add_line	app/helpers/diff_helper.rb	/^    def add_line(type, input_file = nil)$/
 add_link	vendor/plugins/graphr-0-1-9/lib/graph/directed_graph.rb	/^  def add_link(from, to, informationOnLink = nil)$/;"	f	class:BackLinkedDirectedGraph
 add_link	vendor/plugins/graphr-0-1-9/lib/graph/directed_graph.rb	/^  def add_link(from, to, informationOnLink = nil)$/;"	f	class:DirectedGraph
 add_link_nodes	vendor/plugins/graphr-0-1-9/lib/graph/directed_graph.rb	/^  def add_link_nodes(from, to)$/;"	f	class:DirectedGraph
-add_member	app/models/team.rb	/^  def add_member(user, assignment_id)$/;"	f	class:Team
+add_member	app/models/team.rb	/^  def self.add_member(user, assignment_id)$/;"	f	class:Team
 add_member_to_invited_team	app/models/teams_user.rb	/^  def self.add_member_to_invited_team(invitee_user_id, invited_user_id, assignment_id)$/;"	F	class:TeamsUser
 add_metareviewer	app/controllers/review_mapping_controller.rb	/^  def add_metareviewer    $/;"	f	class:ReviewMappingController
 add_node	vendor/plugins/graphr-0-1-9/lib/graph/directed_graph.rb	/^  def add_node(node)$/;"	f	class:DirectedGraph

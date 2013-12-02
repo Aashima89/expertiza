@@ -14,7 +14,10 @@ class SubmittedContentController < ApplicationController
     if @assignment.max_team_size > 1 && @participant.team.nil?
       flash[:alert] = "This is a team assignment. Before submitting your work, you must <a style='color: blue;' href='../../student_team/view/#{params[:id]}'>create a team</a>, even if you will be the only member of the team"
       redirect_to :controller => 'student_task', :action => 'view', :id => params[:id]
-      else if @participant.team.nil?
+    else if @participant.team.nil?
+
+           @model_name = controller_name.classify
+           puts 'Model NAme '+@model_name
              #create a new team for current user before submission
              team = AssignmentTeam.create_team_and_node(@assignment.id)
              puts "+++++@participant.user_id = "+ @participant.user_id.to_s

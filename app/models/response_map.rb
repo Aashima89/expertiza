@@ -86,6 +86,7 @@ class ResponseMap < Response
 
   def self.find(*args)
     if args.length == 1
+      puts "argsuments value "+ args.first.to_s
       Response.find_by_map_id(args.first)
     else
       super

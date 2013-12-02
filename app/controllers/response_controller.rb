@@ -3,11 +3,13 @@ class ResponseController < ApplicationController
   helper :submitted_content
   helper :file
 
-  def latestResponseVersion
+  def latestResponseVersion(map_id)
     #get all previous versions of responses for the response map.
-    array_not_empty=0
+    puts " In latestResponseVersion" +map_id.to_s
+    array_not_empty = 0
     @review_scores=Array.new
-    @prev=Response.find_by_map_id(@map.id)
+    #puts "Maps_id"+ @map.id
+    @prev=Response.find_by_map_id(map_id)
     for element in @prev
       array_not_empty=1
       @review_scores << element
@@ -167,7 +169,7 @@ class ResponseController < ApplicationController
         render :action => 'response'
       end
     end
-  end
+
 
   def update  ###-### Seems like this method may no longer be used -- not in E806 version of the file
     @response = Response.find(params[:id])
@@ -198,13 +200,13 @@ class ResponseController < ApplicationController
     begin
        ResponseHelper.compare_scores(@response, @questionnaire)
        ScoreCache.update_cache(@response.id)
-    
+
       msg = "Your response was successfully saved."
     rescue
       msg = "An error occurred while saving the response: "+$!
     end
     redirect_to :controller => 'response', :action => 'saving', :id => @map.id, :return => params[:return], :msg => msg, :save_options => params[:save_options]
-  end  
+  end
 
   ###-### custom_update has been removed in this merge.
     def view
@@ -253,11 +255,12 @@ class ResponseController < ApplicationController
     end
 
     def create
-      @map = ResponseMap.find(params[:id])                 #assignment/review/metareview id is in params id
+      @map = ResponseMap.find(params[:id])     #assignment/review/metareview id is in params id
+           puts "Values in map"+ @map.id.to_s
       @res = 0
       msg = ""
       error_msg = ""
-      latestResponseVersion
+      latestResponseVersion(@map.id)
                                                            #if previous responses exist increment the version number.
       if array_not_empty==1
         @sorted=@review_scores.sort { |m1, m2| (m1.version_num and m2.version_num) ? m2.version_num <=> m1.version_num : (m1.version_num ? -1 : 1) }
@@ -286,8 +289,8 @@ class ResponseController < ApplicationController
         score = Score.create(:response_id => @response.response_id, :question_id => questions[k.to_i].id, :score => v[:score], :comments => v[:comment])
       end
     rescue
-      error_msg = "Your response was not saved. Cause: " + $!
-    end
+      error_msg = "Your response was not saved. Cause: "
+
 
     begin
       ResponseHelper.compare_scores(@response, @questionnaire)
@@ -295,12 +298,13 @@ class ResponseController < ApplicationController
       #@map.save
       msg = "Your response was successfully saved."
     rescue
+
       @response.delete
       error_msg = "Your response was not saved. Cause: " + $!
     end
 
     redirect_to :controller => 'response', :action => 'saving', :id => @map.map_id, :return => params[:return], :msg => msg, :error_msg => error_msg, :save_options => params[:save_options]
-  end
+    end
 
   def custom_create ###-### Is this used?  It is not present in the master branch.
     @map = ResponseMap.find(params[:id])
@@ -324,7 +328,7 @@ class ResponseController < ApplicationController
     @return = params[:return]
     @map.notification_accepted = false
     @map.save
-    #@map.assignment.id == 561 or @map.assignment.id == 559 or 
+    #@map.assignment.id == 561 or @map.assignment.id == 559 or
     if (@map.assignment.id == 562) #Making the automated metareview feature available for one 'ethical analysis 6' assignment only.
                                    #puts("*** saving for me:: #{params[:id]} and metareview selection :save_options - #{params["save_options"]}")
       if (params["save_options"].nil? or params["save_options"].empty?) #default it to with metareviews
@@ -395,5 +399,5 @@ class ResponseController < ApplicationController
       end
       !current_user_id?(response.map.reviewer.user_id)
     end
-  end
+
 end
