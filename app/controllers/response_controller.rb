@@ -167,7 +167,6 @@ class ResponseController < ApplicationController
         render :action => 'response'
       end
     end
-  end
 
   def update  ###-### Seems like this method may no longer be used -- not in E806 version of the file
     @response = Response.find(params[:id])
@@ -234,7 +233,7 @@ class ResponseController < ApplicationController
       @header = "New"
       @next_action = "create"
       @feedback = params[:feedback]
-      @map = ResponseMap.find(params[:id])
+      @map = Response.find(params[:id])
       @return = params[:return]
       @modified_object = @map.id
       get_content
@@ -289,18 +288,18 @@ class ResponseController < ApplicationController
       error_msg = "Your response was not saved. Cause: " + $!
     end
 
-    begin
-      ResponseHelper.compare_scores(@response, @questionnaire)
-      ScoreCache.update_cache(@res)
-      #@map.save
-      msg = "Your response was successfully saved."
-    rescue
-      @response.delete
-      error_msg = "Your response was not saved. Cause: " + $!
-    end
+    #begin
+    #  ResponseHelper.compare_scores(@response, @questionnaire)
+    #  ScoreCache.update_cache(@res)
+    #  #@map.save
+    #  msg = "Your response was successfully saved."
+    #rescue
+    #  @response.delete
+    #  error_msg = "Your response was not saved. Cause: " + $!
+    #end
+    #
+    #redirect_to :controller => 'response', :action => 'saving', :id => @map.map_id, :return => params[:return], :msg => msg, :error_msg => error_msg, :save_options => params[:save_options]
 
-    redirect_to :controller => 'response', :action => 'saving', :id => @map.map_id, :return => params[:return], :msg => msg, :error_msg => error_msg, :save_options => params[:save_options]
-  end
 
   def custom_create ###-### Is this used?  It is not present in the master branch.
     @map = ResponseMap.find(params[:id])
@@ -395,5 +394,4 @@ class ResponseController < ApplicationController
       end
       !current_user_id?(response.map.reviewer.user_id)
     end
-  end
 end

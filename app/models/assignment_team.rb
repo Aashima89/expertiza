@@ -215,11 +215,9 @@ class AssignmentTeam < Team
   end
 
   def self.create_team_and_node(assignment_id)
-    puts (assignment_id.id.to_s + " is create_team_and_node")
     assignment = Assignment.find(assignment_id.id)
     team_name = Team.generate_team_name(assignment.name)
     team = AssignmentTeam.create(name: team_name, parent_id: assignment_id.id)
-    puts (team.id.to_s + "is team id " + team.parent_id.to_s + "is parent id in assignment_team file")
     TeamNode.create(parent_id: assignment_id.id, node_object_id: team.id)
     team
   end

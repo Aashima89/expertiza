@@ -11,7 +11,7 @@ class Signupsheet < ActiveRecord::Base
     if users_team.size == 0
       #if team is not yet created, create new team.
       team = AssignmentTeam.create_team_and_node(assignment_id)
-      #puts (team.id.to_s + "is team id " + team.parent_id.to_s + "is parent id")
+      puts (team.id.to_s + "is team id " + team.parent_id.to_s + "is parent id")
       user = User.find(user_id)
       teamuser = ManageTeamHelper.create_team_users(user, team.id)
      confirmationStatus = self.confirmtopic(team.id, topic_id, assignment_id, user_id)
@@ -24,6 +24,7 @@ class Signupsheet < ActiveRecord::Base
     #check whether user has signed up already
     user_signup = self.other_confirmed_topic_for_user(assignment_id, creator_id)
 
+    #creator_id is team id
     sign_up = SignedUpUser.new
     sign_up.topic_id = topic_id
     sign_up.creator_id = creator_id

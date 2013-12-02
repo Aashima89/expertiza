@@ -282,7 +282,6 @@ class SignUpSheetController < ApplicationController
     #Always use team_id ACS
 
     #check whether the user already has a team for this assignment
-    puts "Assignment value in signupsheetcon"+@assignment.id.to_s
     Signupsheet.signup_team(@assignment, @user_id, params[:id])
     redirect_to :action => 'list', :id => params[:assignment_id]
   end
