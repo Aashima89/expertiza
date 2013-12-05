@@ -6,12 +6,12 @@ class ResponseController < ApplicationController
   def latestResponseVersion(map_id)
     #get all previous versions of responses for the response map.
     puts " In latestResponseVersion" +map_id.to_s
-    array_not_empty = 0
+    @array_not_empty = 0
     @review_scores=Array.new
     #puts "Maps_id"+ @map.id
-    @prev=Response.find_by_map_id(map_id)
-    for element in @prev
-      array_not_empty=1
+    @prev=Response.find_all_by_map_id(map_id)
+    @prev.each do |element|
+      @array_not_empty=1
       @review_scores << element
     end
     end
@@ -36,9 +36,9 @@ class ResponseController < ApplicationController
   def rereview
       @map=ResponseMap.find(params[:id])
       get_content
-      latestResponseVersion
+      latestResponseVersion(@map.map_id)
       #sort all the available versions in descending order.
-      if array_not_empty==1
+      if @array_not_empty==1
         @sorted=@review_scores.sort { |m1, m2| (m1.version_num and m2.version_num) ? m2.version_num <=> m1.version_num : (m1.version_num ? -1 : 1) }
         @largest_version_num=@sorted[0]
         @latest_phase=@largest_version_num.created_at
@@ -121,7 +121,7 @@ class ResponseController < ApplicationController
         end
       end
 
-    if array_not_empty==1
+    if @array_not_empty==1
       @sorted=@review_scores.sort { |m1, m2| (m1.version_num and m2.version_num) ? m2.version_num <=> m1.version_num : (m1.version_num ? -1 : 1) }
       @largest_version_num=@sorted[0]
     end
@@ -153,12 +153,12 @@ class ResponseController < ApplicationController
     @response = Response.find(params[:id])
     return if redirect_when_disallowed(@response)
     @map = @response.map
-    LatestResponseVersion
-    if array_not_empty==1
+    latestResponseVersion(@map.map_id)
+    if @array_not_empty==1
       @sorted=@review_scores.sort { |m1,m2|(m1.version_num and m2.version_num) ? m2.version_num <=> m1.version_num : (m1.version_num ? -1 : 1)}
       @largest_version_num=@sorted[0]
     end
-    @response = Response.find_by_map_id_and_version_num(@map.id,@largest_version_num.version_num)
+    @response = Response.find_by_map_id_and_version_num(@map.map_id,@largest_version_num.version_num)
     @modified_object = @response.id
     get_content
     get_scores
@@ -256,14 +256,15 @@ class ResponseController < ApplicationController
   end
 
   def create
-    @map = ResponseMap.find(params[:id])     #assignment/review/metareview id is in params id
+    @next_action = "view"
+    @map = Response.find_by_id(params[:id])     #assignment/review/metareview id is in params id
     #puts "Values in map"+ @map.id.to_s
     @res = 0
     msg = ""
     error_msg = ""
-    latestResponseVersion(@map.id)
+    latestResponseVersion(@map.map_id)
                                              #if previous responses exist increment the version number.
-    if array_not_empty==1
+    if @array_not_empty==1
       @sorted=@review_scores.sort { |m1, m2| (m1.version_num and m2.version_num) ? m2.version_num <=> m1.version_num : (m1.version_num ? -1 : 1) }
       @largest_version_num=@sorted[0]
       if (@largest_version_num.version_num==nil)
@@ -276,7 +277,8 @@ class ResponseController < ApplicationController
     else
       @version=1
     end
-    @response = Response.find_by_map_id(@map_id)
+
+    @response = Response.find_by_id(params[:id])
     @response.additional_comment = params[:review][:comments]
     @response.version_num = @version
     @response.save
@@ -289,6 +291,7 @@ class ResponseController < ApplicationController
     params[:responses].each_pair do |k, v|
       score = Score.create(:response_id => @response.response_id, :question_id => questions[k.to_i].id, :score => v[:score], :comments => v[:comment])
     end
+      puts ("helloooooo")
   rescue
     error_msg = "Your response was not saved. Cause: "
 

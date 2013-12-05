@@ -136,7 +136,21 @@ class Score < ActiveRecord::Base
         end
       end
 
-      resubmission_times =   ResubmissionTime.find_all_by_participant_id(map.reviewee_id).order('resubmitted_at DESC')
+      resubmission_times = ResubmissionTime.find_all_by_participant_id(map.reviewee_id).order('resubmitted_at DESC')
+      #changes start
+      assignment_Check = Assignment.find_by_id(map.reviewed_object_id)
+      if((assignment_Check.id!=null) && (assignment_Check.wiki_type_id>1))
+        participant_Check = Participant.all(:conditions => ["parent_id = ?, user_id = ?", assignment_Check.id, map.reviewee_id])
+        resubmission_times = WikiType.last_modified_date(participant_Check[0].submitted_hyperlinks)
+        participant_Check.each do |participant|
+          if(WikiType.last_modified_date(participant.submitted_hyperlink)>resubmission_times)
+            resubmission_times = WikiType.last_modified_date(participant.submitted_hyperlink)
+          end
+        end
+      end
+      #changes end
+
+
       if response .is_valid_for_score_calculation?(resubmission_times, latest_review_phase_start_time)
         @invalid = 0
       else

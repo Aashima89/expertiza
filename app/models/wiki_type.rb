@@ -269,4 +269,113 @@ class WikiType < ActiveRecord::Base
    line_items = review_mediawiki(_assignment_url, _start_date , _wiki_user)
    return line_items.first(3)
  end
+
+  def self.last_modified_date(_assignment_url)
+    response = '' #the response from the URL
+    lastDate = Time.now
+
+    #Check to make sure we were passed a valid URL
+    matches = /http:/.match( _assignment_url )
+    if not matches
+      return response
+    end
+
+    #Args
+    url = _assignment_url.chomp("/")
+    wiki_url = _assignment_url.scan(/(.*?)doku.php/)
+    namespace = _assignment_url.split(/\//)
+    namespace_url = namespace.last
+
+    #Doku Wiki Specific
+    index = "?idx=" + namespace_url
+    review = "?do=revisions" #"?do=recent"
+
+
+    #Grab all relevant urls from index page ####################
+    url += index
+    open(url,
+         "User-Agent" => "Ruby/#{RUBY_VERSION}",
+         "From" => "email@addr.com", #Put pg admin email address here
+         "Referer" => "http://") { |f| #Put pg URL here
+
+                                       # Save the response body
+      response = f.read
+
+    }
+
+    #Clean URLs
+    response = response.gsub(/href=\"(.*?)doku.php/, 'href="' + wiki_url[0].to_s + 'doku.php')
+
+    #Get all URLs
+    index_urls = response.scan(/href=\"(.*?)\"/)
+
+    namespace_urls = Array.new #Create array to store all URLs in this namespace
+    namespace_urls << _assignment_url
+
+    #Narrow down to all URLs in our namespace
+    index_urls.each_with_index do |index_url, index|
+
+      scan_result = index_url[0].scan(_assignment_url + ":") #scan current item
+
+      if _assignment_url + ":" === scan_result[0]
+        namespace_urls << index_urls[index].to_s
+      end
+
+    end
+
+    #Create a array for all of our review_items
+    review_items = Array.new
+
+    #Process Each page in our namespace
+    namespace_urls.each_with_index do |cur_url, index|
+
+      #return cur_url + review
+      url = namespace_urls[index].to_s
+      url += review
+      #return url
+      open(url,
+           "User-Agent" => "Ruby/#{RUBY_VERSION}",
+           "From" => "email@addr.com", #Put pg admin email address here
+           "Referer" => "http://") { |f| #Put pg URL here
+
+                                         # Save the response body
+        response = f.read
+
+      }
+
+      ## DOKUWIKI PARSING
+
+      #Clean URLs
+      response = response.gsub(/href=\"(.*?)doku.php/,'href="' + wiki_url[0].to_s + 'doku.php')
+
+      # Luckily, dokuwiki uses a structure like:
+      # <!-- wikipage start -->
+      # Content
+      # <!-- wikipage stop -->
+      #
+      #Get everything between the words "wikipage"
+      changes = response.split(/wikipage/)
+      #Trim the "start -->" from "<!-- wikipage start -->"
+      changes = changes[1].sub(/start -->/,"")
+      #Trim the "<!--" from "<!-- wikipage stop -->"
+      response = changes.sub(/<!--/,"")
+
+
+      #Extract each line item
+      line_items = response.scan(/<li>(.*?)<\/li>/)
+
+      #Extract the dates only
+      dates = response.scan(/\d\d\d\d\/\d\d\/\d\d \d\d\:\d\d/)
+      if (dates!=null)
+        lastDate = dates[0]
+        dates.each do |date|
+          if Time.parse(date) > lastDate
+            lastDate = Time.parse(date)
+         end
+       end
+      end
+    end
+    Time.parse(lastDate)
+  end
+
 end
